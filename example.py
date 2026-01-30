@@ -17,7 +17,7 @@ from luck_analysis import (
 )
 from utils import (
     generate_synthetic_season, create_team_names, calculate_win_loss_records,
-    split_train_test, format_probability, format_record
+    format_probability, format_record
 )
 from visualization import (
     plot_team_strengths, plot_luck_factors, plot_win_distribution,

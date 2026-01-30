@@ -80,7 +80,7 @@ Skill vs Luck Decomposition:
 
 ```python
 from bradley_terry import BradleyTerryModel
-from luck_analysis import calculate_luck_factor, simulate_season
+from luck_analysis import calculate_luck_factor, calculate_win_distribution
 
 # Your game data: list of (team_i, team_j, result)
 # result = 1 if team_i wins, 0 if team_j wins

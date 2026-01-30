@@ -134,7 +134,12 @@ def analyze_predictability(predictions: np.ndarray, actuals: np.ndarray) -> dict
     calibration = []
     
     for i in range(n_bins):
-        bin_mask = (predictions >= bins[i]) & (predictions < bins[i + 1])
+        # Handle the last bin to include predictions exactly equal to 1.0
+        if i == n_bins - 1:
+            bin_mask = (predictions >= bins[i]) & (predictions <= bins[i + 1])
+        else:
+            bin_mask = (predictions >= bins[i]) & (predictions < bins[i + 1])
+        
         if bin_mask.sum() > 0:
             predicted_prob = predictions[bin_mask].mean()
             actual_prob = actuals[bin_mask].mean()
@@ -189,8 +194,9 @@ def estimate_skill_vs_luck_ratio(model: BradleyTerryModel,
     # Variance in expected wins (skill component)
     skill_variance = np.var(expected_wins)
     
-    # Average within-simulation variance (luck component)
-    luck_variance = np.mean([np.var(win_distribution[i, :]) for i in range(n_simulations)])
+    # Average variance across teams (luck component)
+    # This is the variance across simulations for each team, averaged over all teams
+    luck_variance = np.mean(np.var(win_distribution, axis=0))
     
     # Alternative: Use variance decomposition
     # Total variance = variance of means + mean of variances

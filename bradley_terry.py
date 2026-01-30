@@ -9,7 +9,6 @@ to predict win probabilities.
 """
 
 import numpy as np
-from scipy.optimize import minimize
 from typing import List, Tuple, Dict, Optional
 
 
