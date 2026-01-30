@@ -156,7 +156,8 @@ def estimate_skill_vs_luck_ratio(model: BradleyTerryModel,
     """
     Estimate the ratio of skill to luck in determining outcomes.
     
-    This uses variance decomposition: total variance = skill variance + luck variance
+    This uses variance decomposition comparing the variance in team strengths
+    to the variance in outcomes.
     
     Args:
         model: Fitted Bradley-Terry model
@@ -182,14 +183,22 @@ def estimate_skill_vs_luck_ratio(model: BradleyTerryModel,
     # Simulate to estimate variance due to luck
     win_distribution = calculate_win_distribution(model, schedule, n_simulations)
     
-    # Average variance across simulations (this is the luck component)
-    luck_variance = np.mean(np.var(win_distribution, axis=1))
+    # Expected wins based on model (mean of simulations)
+    expected_wins = np.mean(win_distribution, axis=0)
     
-    # Skill variance is the remainder
-    skill_variance = max(0, total_variance - luck_variance)
+    # Variance in expected wins (skill component)
+    skill_variance = np.var(expected_wins)
     
-    # Ratio
+    # Average within-simulation variance (luck component)
+    luck_variance = np.mean([np.var(win_distribution[i, :]) for i in range(n_simulations)])
+    
+    # Alternative: Use variance decomposition
+    # Total variance = variance of means + mean of variances
+    # skill_variance is already the variance of expected wins
+    # luck_variance is the mean variance within each simulation
+    
+    # Ratio based on expected vs actual
     if total_variance == 0:
         return 0.0
     
-    return skill_variance / total_variance
+    return skill_variance / (skill_variance + luck_variance) if (skill_variance + luck_variance) > 0 else 0.0
